@@ -10,7 +10,7 @@ namespace IpValidation.Repositories
 {
     public class BlockingRepository : IBlockingRepository
     {
-        private ConcurrentDictionary<string, int> BlockingDictionary = new();
+        private ConcurrentDictionary<string, DateTime> BlockingDictionary = new();
         public ConcurrentDictionary<string, string> ResultPair = new ConcurrentDictionary<string, string> ();
         public readonly ConcurrentDictionary<string, string> countries = new ConcurrentDictionary<string, string>
         {
@@ -41,7 +41,7 @@ namespace IpValidation.Repositories
             if (Regex.IsMatch(code, @"^[A-Za-z]{2,3}$"))
             {
                 bool res1 = BlockingDictionary.ContainsKey(code);
-                BlockingDictionary.GetOrAdd(code, BlockingDictionary.Count + 1 );
+                BlockingDictionary.GetOrAdd(code, DateTime.Now );
                 if (!res1)
                 {
                     return 1;
@@ -104,6 +104,34 @@ namespace IpValidation.Repositories
            
         }
 
-     
+        public bool CheckIfBlocked(string code)
+        {
+            return BlockingDictionary.ContainsKey(code);
+        }
+
+        public int AddTemporarily(string code,int duration)
+        {
+            if (Regex.IsMatch(code, @"^[A-Za-z]{2,3}$"))
+            {
+                bool res1 = BlockingDictionary.ContainsKey(code);
+                BlockingDictionary.GetOrAdd(code, DateTime.Now.AddMinutes(duration));
+                if (!res1)
+                {
+                    return 1;
+
+                }
+                else
+                {
+                    return 2;
+
+                }
+            }
+            return 3;
+        }
+
+        public ConcurrentDictionary<string, DateTime> GetTemporaryBlocks()
+        {
+            return BlockingDictionary;
+        }
     }
 }

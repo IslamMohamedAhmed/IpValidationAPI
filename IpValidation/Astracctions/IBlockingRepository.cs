@@ -10,6 +10,13 @@ namespace IpValidation.Astracctions
     
         public int Add(string code); 
         public int Delete(string code);
+
+        public bool CheckIfBlocked(string code);
+
+        public int AddTemporarily(string code,int duration);
+
+        public ConcurrentDictionary<string,DateTime> GetTemporaryBlocks();
+        
         
  
     }

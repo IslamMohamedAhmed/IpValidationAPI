@@ -15,6 +15,8 @@ builder.Services.AddSingleton<GeolocationService>();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<List<BlockedAttempts>>();
 builder.Services.AddSingleton<IBlockingRepository,BlockingRepository>();
+builder.Services.AddSingleton<AutoUnblockServices>();
+builder.Services.AddHostedService<TemporaryCleanupBlockingCountries>();
 
 
 var app = builder.Build();

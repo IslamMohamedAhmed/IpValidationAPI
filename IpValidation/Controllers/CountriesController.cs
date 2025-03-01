@@ -1,4 +1,7 @@
-﻿using IpValidation.Astracctions;
+﻿using System.Text.RegularExpressions;
+using IpValidation.Astracctions;
+using IpValidation.Services;
+using IpValidation.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +14,13 @@ namespace IpValidation.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly IBlockingRepository blockingRepository;
+        private readonly AutoUnblockServices autoUnblockServices;
 
-        public CountriesController(IConfiguration configuration, IBlockingRepository blockingRepository)
+        public CountriesController(IConfiguration configuration, IBlockingRepository blockingRepository,AutoUnblockServices autoUnblockServices)
         {
             _configuration = configuration;
             this.blockingRepository = blockingRepository;
+            this.autoUnblockServices = autoUnblockServices;
         }
         [HttpGet("blocked")]
         public ActionResult getAllBlockings([FromQuery] int page = 1, [FromQuery] int size = 4, [FromQuery] string searching = "")
@@ -71,7 +76,26 @@ namespace IpValidation.Controllers
             
         }
 
+        [HttpPost("temporal-block")]
+        public ActionResult BlockTemporarily([FromBody] RemoveBlockRequest request) {
+            if (!Regex.IsMatch(request.CountryCode, @"^[A-Za-z]{2,3}$"))
+            {
+                return BadRequest("Invalid country code.");
+            }
 
+            if (request.DurationMinutes < 1 || request.DurationMinutes > 1440)
+            {
+                return BadRequest("Duration must be between 1 and 1440 minutes. or a full day 24 hours");
+            }
+
+            // trying to block a country
+            if (!autoUnblockServices.TryBlocking(request.CountryCode, request.DurationMinutes))
+            {
+                return Conflict("Country is already temporarily blocked.");
+            }
+
+            return Ok($"Country {request.CountryCode} is blocked for {request.DurationMinutes} minutes.");
+        }
 
     }
 }
