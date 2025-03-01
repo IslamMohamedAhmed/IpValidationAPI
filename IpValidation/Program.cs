@@ -1,5 +1,7 @@
 using IpValidation.Astracctions;
 using IpValidation.Repositories;
+using IpValidation.Services;
+using IpValidation.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,8 +11,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<GeolocationService>();
 builder.Services.AddHttpClient();
+builder.Services.AddSingleton<List<BlockedAttempts>>();
 builder.Services.AddSingleton<IBlockingRepository,BlockingRepository>();
+
 
 var app = builder.Build();
 

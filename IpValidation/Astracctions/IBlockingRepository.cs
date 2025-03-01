@@ -5,6 +5,7 @@ namespace IpValidation.Astracctions
 {
     public interface IBlockingRepository
     {
+        
         public PagiatedResult GetAll(int page, int pageSize, string search); 
     
         public int Add(string code); 

@@ -12,7 +12,7 @@ namespace IpValidation.Repositories
     {
         private ConcurrentDictionary<string, int> BlockingDictionary = new();
         public ConcurrentDictionary<string, string> ResultPair = new ConcurrentDictionary<string, string> ();
-        private static readonly ConcurrentDictionary<string, string> countries = new ConcurrentDictionary<string, string>
+        public readonly ConcurrentDictionary<string, string> countries = new ConcurrentDictionary<string, string>
         {
             ["US"] = "United States",
             ["CA"] = "Canada",
